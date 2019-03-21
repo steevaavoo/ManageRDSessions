@@ -15,4 +15,4 @@ Develop a module to deal with (and thereby streamline) everyday RD (2012 and abo
 ## Tangents
 
 1. Make it possible to pipe results of Get-x functions into Do-x functions
-1. See if it's possible to work with a table and select one or more individual sessions to Do-x functions
+1. See if it's possible to work with a table and select one or more individual sessions to pass into Do-x functions
