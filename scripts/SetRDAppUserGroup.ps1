@@ -2,8 +2,7 @@
 $remoteapps = ( Get-RDRemoteApp )
 
 #Executes a loop based on each entry in $remoteapps, using $remoteapp as the operator
-    ForEach ( $remoteapp in $remoteapps )
-{ 
+ForEach ( $remoteapp in $remoteapps ) {
     #Getting the existing Users and Groups on this Remote App and putting them in $usergroups array
     $usergroups = $remoteapp.usergroups
     #Adding specified user/group to the array $usergroups (change as needed)

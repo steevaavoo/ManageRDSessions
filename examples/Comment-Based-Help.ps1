@@ -1,4 +1,4 @@
-<# 
+<#
 .SYNOPSIS
 Get-DiskInventory retrieves logical disk information from one or more computers.
 .DESCRIPTION
@@ -11,3 +11,5 @@ The drive type to query. See Win32_LogicalDisk documentation for values. 3 is a 
 Get-DiskInventory -ComputerName COMPUTER-NAME -DriveType 3
 Queries the computer "COMPUTER-NAME" for all Fixed Disks and displays their details.
 #>
+
+# If you want to deploy this as a quick template, just type hash hash and it will EXPLODE forth onto the screen in glory.

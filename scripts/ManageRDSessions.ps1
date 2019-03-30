@@ -3,45 +3,45 @@
 #region sessiondiscovery
 # Find and display all RDUserSessions which are in a state of STATE_DISCONNECTED
 $sessions = Get-RDUserSession | Where-Object { $_.SessionState -eq 'STATE_DISCONNECTED' }
-$sessions | Select-Object HostServer, UserName, @{ Label='Idle Time (Mins)'; expression = {$_.IdleTime / 60000 -as [int] } }, UnifiedSessionId, SessionState | Format-Table
+$sessions | Select-Object HostServer, UserName, @{ Label = 'Idle Time (Mins)'; expression = { $_.IdleTime / 60000 -as [int] } }, UnifiedSessionId, SessionState | Format-Table
 
 # Find and display all RDUserSessions which are STATE_DISCONNECTED with an idle time longer than 60 minutes
 $sessions = Get-RDUserSession | Where-Object { $_.SessionState -eq 'STATE_DISCONNECTED' -and ( $_.IdleTime / 60000 ) -gt 60 }
-$sessions | Select-Object HostServer, UserName, @{ Label='Idle Time (Mins)'; expression = {$_.IdleTime / 60000 -as [int] } }, UnifiedSessionId, SessionState | Format-Table
+$sessions | Select-Object HostServer, UserName, @{ Label = 'Idle Time (Mins)'; expression = { $_.IdleTime / 60000 -as [int] } }, UnifiedSessionId, SessionState | Format-Table
 
 # Find and display all connected RDUserSessions - use this one carefully with the following commands!
 $sessions = Get-RDUserSession | Where-Object { $_.SessionState -eq 'STATE_CONNECTED' }
-$sessions | Select-Object HostServer, UserName, @{ Label='Idle Time (Mins)'; expression = {$_.IdleTime / 60000 -as [int] } }, UnifiedSessionId, SessionState | Format-Table
+$sessions | Select-Object HostServer, UserName, @{ Label = 'Idle Time (Mins)'; expression = { $_.IdleTime / 60000 -as [int] } }, UnifiedSessionId, SessionState | Format-Table
 #endregion
 
 
 #region sessionmanagement
 # Logging off all RDUserSessions currently in $sessions
-foreach ( $session in $sessions ){
+foreach ( $session in $sessions ) {
 
-$sessionParams = @{
-    HostServer = $session.HostServer
-    UnifiedSessionID = $session.UnifiedSessionId
-    Force = $false
-}
+    $sessionParams = @{
+        HostServer       = $session.HostServer
+        UnifiedSessionID = $session.UnifiedSessionId
+        Force            = $false
+    }
     Invoke-RDUserLogoff @sessionParams
 }
 
 
 # Testing Results and showing targets
 foreach ( $session in $sessions ) {
-Write-Host "Targeting User [$($session.UserName)] with Unified Session Id [$($session.UnifiedSessionId)] on Host [$($session.HostServer)], Session State [$($session.SessionState)], Idle Time [$($session.IdleTime / 60000)]"
+    Write-Host "Targeting User [$($session.UserName)] with Unified Session Id [$($session.UnifiedSessionId)] on Host [$($session.HostServer)], Session State [$($session.SessionState)], Idle Time [$($session.IdleTime / 60000)]"
 }
 
 
 # Disconnect all users currently in $sessions - use with care!
 
-foreach ( $session in $sessions ){
-$sessionParams = @{
-    HostServer = $session.HostServer
-    UnifiedSessionID = $session.UnifiedSessionId
-    Force = $false
-}
+foreach ( $session in $sessions ) {
+    $sessionParams = @{
+        HostServer       = $session.HostServer
+        UnifiedSessionID = $session.UnifiedSessionId
+        Force            = $false
+    }
     Disconnect-RDUser @sessionParams
 
 }
@@ -51,16 +51,16 @@ $sessionParams = @{
 
 foreach ( $session in $sessions ) {
 
-$messageParams = @{
-    Hostserver = $session.HostServer
-    UnifiedSessionId = $session.UnifiedSessionId
-    MessageTitle = 'Log Off Immediately!'
-    MessageBody = 'Scheduled Maintenance is due to begin on this server within 5 minutes. To avoid loss of work, save and log off immediately.'
-}
+    $messageParams = @{
+        Hostserver       = $session.HostServer
+        UnifiedSessionId = $session.UnifiedSessionId
+        MessageTitle     = 'Log Off Immediately!'
+        MessageBody      = 'Scheduled Maintenance is due to begin on this server within 5 minutes. To avoid loss of work, save and log off immediately.'
+    }
 
-#Write-Host "Sending Message [$($messageParams.MessageBody)] to HostServer [$($messageParams.Hostserver)], USID [$($messageParams.UnifiedSessionId)]"
+    #Write-Host "Sending Message [$($messageParams.MessageBody)] to HostServer [$($messageParams.Hostserver)], USID [$($messageParams.UnifiedSessionId)]"
 
-Send-RDUserMessage @messageParams
+    Send-RDUserMessage @messageParams
 }
 
 
