@@ -1,10 +1,12 @@
 function Get-sbRDSession {
+    [OutputType('Custom.SB.RDSession')]
     [cmdletbinding()]
     param(
         [Parameter(Mandatory = $false)]
         [ValidateSet("Active", "Idle", "Connected", "Disconnected", "Any")]
         [Alias("State")]
         [string]$SessionState = "Any",
+
         [Parameter(Mandatory = $false)]
         [int]$MinimumIdleTime = 0
     )
