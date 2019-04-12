@@ -51,11 +51,13 @@ End {
 } #function
 
 function Remove-sbRDSession {
+    # TO SPLIT INTO 2 DIVERSE FUNCTIONS - trying to do too much (see project)
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
         # Accepting Pipeline ByValue and requiring custom Type - also added [Object[]] to make an array, not sure if needed
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession,
+
         [Parameter(Mandatory = $true)]
         [ValidateSet("LogOff", "Disconnect")]
         [string]$Action
