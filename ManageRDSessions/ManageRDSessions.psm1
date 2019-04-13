@@ -31,19 +31,16 @@ function Get-sbRDSession {
         }
 
     foreach ($session in $sessions) {
-        # Creating PSObject to output and naming as my own type for use in later pipeline input...
-        $object = [PSCustomObject]@{
+        # Creating and Outputting PSCustomObject
+        [PSCustomObject]@{
             PSTypeName       = "Custom.SB.RDSession"
             HostServer       = $session.HostServer
             UserName         = $session.UserName
             UnifiedSessionID = $session.UnifiedSessionID
             SessionState     = $session.SessionState
             IdleTime         = ($session.IdleTime / 60000 -as [int])
-        } #pscustomobject
-
-        # Outputting object
-        Write-Output $object
-    } #foreach
+        }
+    }
 } #process
 
 End {
