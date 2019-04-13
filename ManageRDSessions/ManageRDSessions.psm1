@@ -8,7 +8,7 @@ function Get-sbRDSession {
         [string]$SessionState = "Any",
 
         [Parameter(Mandatory = $false)]
-        [int]$MinimumIdleTime = 0
+        [int]$MinimumIdleMins = 0
     )
 
     Begin {
@@ -26,7 +26,7 @@ function Get-sbRDSession {
         }
         Write-Verbose "Querying RD Session Collection for $SessionState sessions"
         $sessions = Get-RDUserSession | Where-Object {
-            $_.SessionState -like $state -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleTime
+            $_.SessionState -like $state -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
         }
 
     foreach ($session in $sessions) {
