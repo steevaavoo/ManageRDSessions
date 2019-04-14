@@ -1,6 +1,7 @@
+# Parameters Hard Coded here because this needs to be run inside host.
 param(
-    $RDHostName,
-    $RDCollectionName
+    $RDHostName = "rds01.lab.milliondollar.me.uk",
+    $RDCollectionName = "MillionDollarCollection"
 )
 
 Set-StrictMode -Version Latest
