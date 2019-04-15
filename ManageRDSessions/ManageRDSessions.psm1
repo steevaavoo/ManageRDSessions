@@ -48,19 +48,15 @@ End {
 }
 } #function
 
-function Remove-sbRDSession {
-    # TO SPLIT INTO 2 DIVERSE FUNCTIONS - trying to do too much (see project)
+function Disconnect-sbRDSession {
+
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
         # Accepting Pipeline ByValue and requiring custom Type - also added [Object[]] to make an array, because this,
         # when supported by a ForEach block in the receiving Function's Process block, will allow someone to output
         # the objects to a variable, then pass that variable in to the receiving function.
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet("LogOff", "Disconnect")]
-        [string]$Action
+        [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession
     )
 
     Begin {
@@ -70,7 +66,7 @@ function Remove-sbRDSession {
     Process {
         # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
         foreach ( $session in $RDSession ) {
-            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.Username)] with Session ID [$($session.UnifiedSessionID)]", "[$Action]")) {
+            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.Username)] with Session ID [$($session.UnifiedSessionID)]", "Disconnect")) {
 
                 $params = @{
                     'HostServer'       = $session.HostServer
@@ -79,21 +75,11 @@ function Remove-sbRDSession {
                     'Force'            = $true
                 }
 
-                Write-Verbose "Attempting $Action of $($session.Username) on $($session.HostServer)"
-                switch ($Action) {
-                    "LogOff" {
-                        Invoke-RDUserLogoff @params
-                        Write-Host "User [$($session.Username)] [Logged Off] from [$($session.HostServer)]"
-                    }
-                    "Disconnect" {
-                        Disconnect-RDUser @params
-                        Write-Host "User [$($session.Username)] [Disconnected] from [$($session.HostServer)]"
-                    }
-                    Default { }
-
-                }
-
+                Write-Verbose "Attempting Disconnect of $($session.Username) on $($session.HostServer)"
+                Disconnect-RDUser @params
+                Write-Host "User [$($session.Username)] Disconnected from [$($session.HostServer)]"
             } #shouldprocess
+
         } #foreach
     } #Process
 
@@ -102,6 +88,45 @@ function Remove-sbRDSession {
     }
 } #function
 
+function Remove-sbRDSession {
+
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    param (
+        # Accepting Pipeline ByValue and requiring custom Type - also added [Object[]] to make an array, because this,
+        # when supported by a ForEach block in the receiving Function's Process block, will allow someone to output
+        # the objects to a variable, then pass that variable in to the receiving function.
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession
+    )
+
+    Begin {
+        # Intentionally empty
+    }
+    # Process block is required when receiving objects from the pipeline, otherwise only last object will be received
+    Process {
+        # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
+        foreach ( $session in $RDSession ) {
+            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.Username)] with Session ID [$($session.UnifiedSessionID)]", "Logoff")) {
+
+                $params = @{
+                    'HostServer'       = $session.HostServer
+                    'UnifiedSessionID' = $session.UnifiedSessionID
+                    'ErrorAction'      = 'Stop'
+                    'Force'            = $true
+                }
+
+                Write-Verbose "Attempting Logoff of $($session.Username) on $($session.HostServer)"
+                Invoke-RDUserLogoff @params
+                Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]"
+            } #shouldprocess
+
+        } #foreach
+    } #Process
+
+    End {
+        # Intentionally empty
+    }
+} #function
 
 <# Start of multi-line comment - BELOW TO BE DEVELOPED AND ACCEPT PIPELINE INPUT
 function Send-sbRDMessage {
