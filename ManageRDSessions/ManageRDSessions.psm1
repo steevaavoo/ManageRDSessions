@@ -66,7 +66,7 @@ function Disconnect-sbRDSession {
     Process {
         # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
         foreach ( $session in $RDSession ) {
-            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.Username)] with Session ID [$($session.UnifiedSessionID)]", "[Disconnect]")) {
+            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.Username)] with Session ID [$($session.UnifiedSessionID)]", "Disconnect")) {
 
                 $params = @{
                     'HostServer'       = $session.HostServer
@@ -75,9 +75,9 @@ function Disconnect-sbRDSession {
                     'Force'            = $true
                 }
 
-                Write-Verbose "Attempting [Disconnect] of $($session.Username) on $($session.HostServer)"
+                Write-Verbose "Attempting Disconnect of $($session.Username) on $($session.HostServer)"
                 Disconnect-RDUser @params
-                Write-Host "User [$($session.Username)] [Disconnected] from [$($session.HostServer)]"
+                Write-Host "User [$($session.Username)] Disconnected from [$($session.HostServer)]"
             } #shouldprocess
 
         } #foreach
@@ -106,7 +106,7 @@ function Remove-sbRDSession {
     Process {
         # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
         foreach ( $session in $RDSession ) {
-            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.Username)] with Session ID [$($session.UnifiedSessionID)]", "[LogOff]")) {
+            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.Username)] with Session ID [$($session.UnifiedSessionID)]", "Logoff")) {
 
                 $params = @{
                     'HostServer'       = $session.HostServer
@@ -115,9 +115,9 @@ function Remove-sbRDSession {
                     'Force'            = $true
                 }
 
-                Write-Verbose "Attempting [LogOff] of $($session.Username) on $($session.HostServer)"
+                Write-Verbose "Attempting Logoff of $($session.Username) on $($session.HostServer)"
                 Invoke-RDUserLogoff @params
-                Write-Host "User [$($session.Username)] [Logged Off] from [$($session.HostServer)]"
+                Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]"
             } #shouldprocess
 
         } #foreach
