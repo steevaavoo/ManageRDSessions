@@ -30,22 +30,22 @@ function Get-sbRDSession {
             $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
         }
 
-    foreach ($session in $sessions) {
-        # Creating and Outputting PSCustomObject
-        [PSCustomObject]@{
-            PSTypeName       = "Custom.SB.RDSession"
-            HostServer       = $session.HostServer
-            UserName         = $session.UserName
-            UnifiedSessionID = $session.UnifiedSessionID
-            SessionState     = $session.SessionState
-            IdleTime         = ($session.IdleTime / 60000 -as [int])
+        foreach ($session in $sessions) {
+            # Creating and Outputting PSCustomObject
+            [PSCustomObject]@{
+                PSTypeName       = "Custom.SB.RDSession"
+                HostServer       = $session.HostServer
+                UserName         = $session.UserName
+                UnifiedSessionID = $session.UnifiedSessionID
+                SessionState     = $session.SessionState
+                IdleTime         = ($session.IdleTime / 60000 -as [int])
+            }
         }
-    }
-} #process
+    } #process
 
-End {
-    #Intentionally empty
-}
+    End {
+        #Intentionally empty
+    }
 } #function
 
 function Disconnect-sbRDSession {
@@ -128,42 +128,47 @@ function Remove-sbRDSession {
     }
 } #function
 
-<# Start of multi-line comment - BELOW TO BE DEVELOPED AND ACCEPT PIPELINE INPUT
 function Send-sbRDMessage {
-    [CmdletBinding()]
+    # Adding a WhatIf/Confirm setting because this involves messaging users in Production, so professionalism counts and this allows mistakes
+    # to be avoided
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param (
-        [
-        Parameter(
-            Mandatory = $true,
-            HelpMessage = "Message to send to all Remote Desktop Users"
-        )
-        ]
-        [Alias('Message')]
+        [Parameter(Mandatory = $true)]
+        [Alias('Title')]
+        [string]$MessageTitle,
+        
+        [Parameter(Mandatory = $true)]
+        [Alias('Body')]
         [string]$MessageBody,
 
-        [
-        Parameter(
-            Mandatory = $true,
-            HelpMessage = "Title of the message to send"
-        )
-        ]
-        [Alias('Title')]
-        [string]$MessageTitle
-
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession
     )
 
-    $sessions = Get-RDUserSession
-    foreach ( $session in $sessions ) {
+    Begin {
+        # Intentionally empty
+    }    
+    # Process block is required when receiving objects from the pipeline, otherwise only last object will be received
+    Process {
+        # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
+        foreach ( $session in $RDSession ) {
+            if ($PSCmdlet.ShouldProcess("RDUser: [$($session.UserName)] with Session ID [$($session.UnifiedSessionID)]", "Send message")) {
 
-        $messageParams = @{
-            Hostserver       = $session.HostServer
-            UnifiedSessionId = $session.UnifiedSessionId
-            MessageTitle     = $MessageTitle
-            MessageBody      = $MessageBody
-        }
+                $messageParams = @{
+                    Hostserver       = $session.HostServer
+                    UnifiedSessionId = $session.UnifiedSessionId
+                    MessageTitle     = $MessageTitle
+                    MessageBody      = $MessageBody
+                }
 
-        Send-RDUserMessage @messageParams
+                Write-Verbose "Sending message to $($session.UserName)"
+                Send-RDUserMessage @messageParams
+            } #shouldprocess
+
+        } #foreach
+    } #process
+
+    End {
+        # Intentionally empty
     }
-}
-
-End of multi-line comment #>
+} #function
