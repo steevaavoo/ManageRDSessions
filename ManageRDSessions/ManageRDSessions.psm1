@@ -1,3 +1,4 @@
+#Requires -RunAsAdministrator
 function Get-sbRDSession {
     [OutputType('Custom.SB.RDSession')]
     [cmdletbinding()]
@@ -12,8 +13,9 @@ function Get-sbRDSession {
     )
 
     Begin {
-        # Intentionally empty
+        #Intentionally empty
     }
+
     # Process block is required when outputting objects to the pipeline, otherwise only the final object will be passed
     Process {
         # Variable Substitution alternative to Switch - suggested by Adam. Love this. It will convert whatever
@@ -30,22 +32,22 @@ function Get-sbRDSession {
             $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
         }
 
-        foreach ($session in $sessions) {
-            # Creating and Outputting PSCustomObject
-            [PSCustomObject]@{
-                PSTypeName       = "Custom.SB.RDSession"
-                HostServer       = $session.HostServer
-                UserName         = $session.UserName
-                UnifiedSessionID = $session.UnifiedSessionID
-                SessionState     = $session.SessionState
-                IdleTime         = ($session.IdleTime / 60000 -as [int])
-            }
+    foreach ($session in $sessions) {
+        # Creating and Outputting PSCustomObject
+        [PSCustomObject]@{
+            PSTypeName       = "Custom.SB.RDSession"
+            HostServer       = $session.HostServer
+            UserName         = $session.UserName
+            UnifiedSessionID = $session.UnifiedSessionID
+            SessionState     = $session.SessionState
+            IdleTime         = ($session.IdleTime / 60000 -as [int])
         }
-    } #process
-
-    End {
-        #Intentionally empty
     }
+} #process
+
+End {
+    #Intentionally empty
+}
 } #function
 
 function Disconnect-sbRDSession {
@@ -136,7 +138,7 @@ function Send-sbRDMessage {
         [Parameter(Mandatory = $true)]
         [Alias('Title')]
         [string]$MessageTitle,
-        
+
         [Parameter(Mandatory = $true)]
         [Alias('Body')]
         [string]$MessageBody,
@@ -147,7 +149,7 @@ function Send-sbRDMessage {
 
     Begin {
         # Intentionally empty
-    }    
+    }
     # Process block is required when receiving objects from the pipeline, otherwise only last object will be received
     Process {
         # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
