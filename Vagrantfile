@@ -19,9 +19,9 @@ fs_hostname = "fs01"
 fs01_ip = "#{subnet_prefix}.111"
 rds_hostname = "rds01"
 rds01_ip = "#{subnet_prefix}.112"
-rd_fqdn = "rds01.lab.milliondollar.me.uk"
-rd_collection_name = "MDRDSLab"
-module_names = "xExchange,xPendingReboot,xActiveDirectory,ComputerManagementDsc,NetworkingDsc"
+# rd_fqdn = "rds01.lab.milliondollar.me.uk"
+# rd_collection_name = "MDRDSLab"
+module_names = "xPendingReboot,xActiveDirectory,ComputerManagementDsc,NetworkingDsc,xRemoteDesktopSessionHost"
 domain_admin_un = "vagrant"
 domain_admin_pw = "vagrant"
 
@@ -132,8 +132,8 @@ Vagrant.configure("2") do |config|
     # See https://www.baswijdenes.com/portfolio/hyper-v-in-virtualbox-guide
     machine.vm.provision "shell", path: "Vagrant/provision/rds01/Install-HyperV.ps1"
     machine.vm.provision :reload
-    machine.vm.provision "shell", path: "Vagrant/provision/rds01/Install-RDS.ps1"
-    machine.vm.provision :reload
+    # machine.vm.provision "shell", path: "Vagrant/provision/rds01/Install-RDS.ps1"
+    # machine.vm.provision :reload
     # Sleep due to RD configuring computer after reboot for ~2 mins
     machine.vm.provision "shell", inline: "Start-Sleep -Seconds 120"
     # This can't be done over WinRM due to multi-hopping. Very annoying - will need to find a workaround - in meantime run manually.

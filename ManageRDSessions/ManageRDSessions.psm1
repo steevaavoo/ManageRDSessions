@@ -32,22 +32,22 @@ function Get-sbRDSession {
             $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
         }
 
-    foreach ($session in $sessions) {
-        # Creating and Outputting PSCustomObject
-        [PSCustomObject]@{
-            PSTypeName       = "Custom.SB.RDSession"
-            HostServer       = $session.HostServer
-            UserName         = $session.UserName
-            UnifiedSessionID = $session.UnifiedSessionID
-            SessionState     = $session.SessionState
-            IdleTime         = ($session.IdleTime / 60000 -as [int])
+        foreach ($session in $sessions) {
+            # Creating and Outputting PSCustomObject
+            [PSCustomObject]@{
+                PSTypeName       = "Custom.SB.RDSession"
+                HostServer       = $session.HostServer
+                UserName         = $session.UserName
+                UnifiedSessionID = $session.UnifiedSessionID
+                SessionState     = $session.SessionState
+                IdleTime         = ($session.IdleTime / 60000 -as [int])
+            }
         }
-    }
-} #process
+    } #process
 
-End {
-    #Intentionally empty
-}
+    End {
+        #Intentionally empty
+    }
 } #function
 
 function Disconnect-sbRDSession {
