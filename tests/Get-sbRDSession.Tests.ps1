@@ -2,14 +2,29 @@
 # Also make sure to keep to the standard Repo Structure e.g.
 <#
 .\<Repo Root>
-    ├───ModuleName
-        ├───Module.psm1
-        ├───Module.psd1
+        ├───ModuleName
+            ├───Module.psm1
+            ├───Module.psd1
     ├───tests
         ├───Get-Example.Tests.ps1
  #>
+
+# UNLESS you have a Vagrant setup with DSC "Examples" folders containing
+# other .psd1 files, in which case, put the modules in a subfolder and
+# adjust the depth of the $ModuleRoot declaration below (\*\*.psd1 for standard,
+# \*\*\*.psd1 for Vagrant/DSC labs)
+<#
+.\<Repo Root>
+    ├───Modules
+        ├───ModuleName
+            ├───Module.psm1
+            ├───Module.psd1
+    ├───tests
+        ├───Get-Example.Tests.ps1
+ #>
+
 $ProjectRoot = Resolve-Path "$PSScriptRoot\.."
-$ModuleRoot = Split-Path (Resolve-Path "$ProjectRoot\*\*.psd1")
+$ModuleRoot = Split-Path (Resolve-Path "$ProjectRoot\*\*\*.psd1")
 $ModuleName = Split-Path $ModuleRoot -Leaf
 $ModulePath = (Join-Path $ModuleRoot "$ModuleName.psd1")
 Import-Module $ModulePath -Force
