@@ -118,8 +118,13 @@ function Remove-sbRDSession {
                 }
 
                 Write-Verbose "Attempting Logoff of $($session.Username) on $($session.HostServer)"
-                Invoke-RDUserLogoff @params
-                Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]"
+                $sb = {Invoke-RDUserLogoff @params}
+                # Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]"
+
+                # Adam's "Jobs" solution here:
+                $jobs = Start-Job -ScriptBlock $sb -Name "Log Off $($session.UserName)"
+                $jobs | Wait-Job | Select-Object Id, Name, State
+
             } #shouldprocess
 
         } #foreach
