@@ -98,7 +98,9 @@ function Remove-sbRDSession {
         # when supported by a ForEach block in the receiving Function's Process block, will allow someone to output
         # the objects to a variable, then pass that variable in to the receiving function.
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession
+        [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession,
+        [Parameter(Mandatory = $false)]
+        [switch]$AsJob
     )
 
     Begin {
@@ -117,16 +119,17 @@ function Remove-sbRDSession {
                     'Force'            = $true
                 }
 
-                Write-Verbose "Attempting Logoff of $($session.Username) on $($session.HostServer)"
-                $sb = {Invoke-RDUserLogoff @params}
-                # Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]"
-
-                # Adam's "Jobs" solution here:
-                $jobs = Start-Job -ScriptBlock $sb -Name "Log Off $($session.UserName)"
-                $jobs | Wait-Job | Select-Object Id, Name, State
-
+                if ($AsJob.IsPresent) {
+                    Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)] [AsJob]"
+                    # Need to use "using:" scope here to pass local hashtable to Job function, otherwise will pass all as null
+                    $sb = {Invoke-RDUserLogoff @using:params}
+                    Start-Job -ScriptBlock $sb -Name "Log Off [$($session.UserName)]" | Select-Object Id,Name,State
+                } else {
+                    Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)]"
+                    Invoke-RDUserLogoff @params
+                    Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]" -ForegroundColor Green
+                } #ifasjob
             } #shouldprocess
-
         } #foreach
     } #Process
 
