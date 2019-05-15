@@ -123,7 +123,7 @@ function Remove-sbRDSession {
                     Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)] [AsJob]"
                     # Need to use "using:" scope here to pass local hashtable to Job function, otherwise will pass all as null
                     $sb = {Invoke-RDUserLogoff @using:params}
-                    Start-Job -ScriptBlock $sb -Name "Log Off [$($session.UserName)]" | Select-Object Id,Name,State
+                    Start-Job -ScriptBlock $sb -Name "Log Off [$($session.UserName)]"
                 } else {
                     Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)]"
                     Invoke-RDUserLogoff @params
