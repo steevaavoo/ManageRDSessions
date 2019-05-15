@@ -1,6 +1,6 @@
 # Variables
 
-$ConfigurationPath = Join-Path -Path $PSScriptRoot -ChildPath '\..\DscConfigurations\RDSLabConfiguration.ps1'
+$ConfigurationPath = Join-Path -Path $PSScriptRoot -ChildPath '\..\..\DscConfigurations\RDSLabConfiguration.ps1'
 $ConfigurationDataPath = "$PSScriptRoot\RDSLabConfigData.psd1"
 $ConfigurationData = Import-PowerShellDataFile -Path $ConfigurationDataPath
 # $ComputerNames = $ConfigurationData.AllNodes.NodeName | Where-Object { $_ -ne "*" }
