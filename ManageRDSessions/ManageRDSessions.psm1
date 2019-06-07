@@ -1,15 +1,26 @@
 #Requires -RunAsAdministrator
 function Get-sbRDSession {
     [OutputType('Custom.SB.RDSession')]
-    [cmdletbinding()]
+    [cmdletbinding(DefaultParameterSetName = 'State')]
     param(
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $false, ParameterSetName = 'State')]
         [ValidateSet("Active", "Idle", "Connected", "Disconnected", "Any")]
         [Alias("State")]
         [string]$SessionState = "Any",
 
-        [Parameter(Mandatory = $false)]
-        [int]$MinimumIdleMins = 0
+        # Switch to choose to include self - as we probably don't want to disconnect/logoff our own session, but
+        # might want to test a message as an example - however, using the UserName parameter will allow current
+        # user to be returned - which makes sense to me
+        [Parameter(Mandatory = $false, ParameterSetName = 'State')]
+        [Alias("Self")]
+        [switch]$IncludeSelf = $false,
+
+        [Parameter(Mandatory = $false, ParameterSetName = 'State')]
+        [int]$MinimumIdleMins = 0,
+
+        [Parameter(Mandatory = $false, ParameterSetName = 'UserName')]
+        [Alias("Name")]
+        [string]$UserName = $null
     )
 
     Begin {
@@ -27,10 +38,29 @@ function Get-sbRDSession {
             Connected    = "STATE_CONNECTED"
             Any          = "*"
         }
-        Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
-        $sessions = Get-RDUserSession | Where-Object {
-            $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
-        }
+
+        if ($UserName) {
+            Write-Verbose "Querying RD Session Collection for users like [$UserName]"
+            $sessions = Get-RDUserSession | Where-Object {
+                $_.UserName -like "*$UserName*"
+            }
+        } else {
+            if ($IncludeSelf) {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState`
+                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+                }
+            } else {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState`
+                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+                        -and $_.UserName -notlike "*$env:USERNAME*"
+                }
+            }
+        } #if IncludeSelf
+
 
         foreach ($session in $sessions) {
             # Creating and Outputting PSCustomObject
@@ -122,7 +152,7 @@ function Remove-sbRDSession {
                 if ($AsJob.IsPresent) {
                     Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)] [AsJob]"
                     # Need to use "using:" scope here to pass local hashtable to Job function, otherwise will pass all as null
-                    $sb = {Invoke-RDUserLogoff @using:params}
+                    $sb = { Invoke-RDUserLogoff @using:params }
                     Start-Job -ScriptBlock $sb -Name "Log Off [$($session.UserName)]"
                 } else {
                     Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)]"
