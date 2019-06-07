@@ -56,7 +56,7 @@ function Get-sbRDSession {
                 $sessions = Get-RDUserSession | Where-Object {
                     $_.SessionState -like $stateLookup.$SessionState`
                         -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-                        -and $_.UserName -notlike "*$env:USERNAME*"
+                        -and $_.UserName -ne "$env:USERNAME"
                 }
             }
         } #if IncludeSelf
