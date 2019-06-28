@@ -1,7 +1,7 @@
 ---
 external help file: ManageRDSessions-help.xml
 Module Name: ManageRDSessions
-online version:
+online version: 0.1.0
 schema: 2.0.0
 ---
 
@@ -219,3 +219,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [Disconnect-sbRDSession](Disconnect-sbRDSession.md)
 
 [Send-sbRDMessage](Send-sbRDMessage.md)
+
+[Online Help](https://bit.ly/2xghizR)

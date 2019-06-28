@@ -1,7 +1,7 @@
 ---
 Module Name: ManageRDSessions
 Module Guid: 877182f5-297e-44fa-af26-567d60221e91
-Download Help Link: https://
+Download Help Link: https://bit.ly/2xghizR
 Help Version: 0.1.0
 Locale: en-US
 ---

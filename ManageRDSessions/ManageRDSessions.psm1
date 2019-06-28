@@ -1,7 +1,7 @@
 #Requires -RunAsAdministrator
 function Get-sbRDSession {
     [OutputType('Custom.SB.RDSession')]
-    [cmdletbinding(DefaultParameterSetName = 'State')]
+    [cmdletbinding(DefaultParameterSetName = 'State', HelpUri = "https://bit.ly/2xghizR")]
     param(
         [Parameter(Mandatory = $false, ParameterSetName = 'State')]
         [ValidateSet("Active", "Idle", "Connected", "Disconnected", "Any")]
@@ -46,16 +46,14 @@ function Get-sbRDSession {
                     $_.UserName -like "*$user*"
                 }
             }#foreach user
-        }
-        else {
+        } else {
             if ($IncludeSelf) {
                 Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
                 $sessions = Get-RDUserSession | Where-Object {
                     $_.SessionState -like $stateLookup.$SessionState`
                         -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
                 }
-            }
-            else {
+            } else {
                 Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
                 $sessions = Get-RDUserSession | Where-Object {
                     $_.SessionState -like $stateLookup.$SessionState`
@@ -158,8 +156,7 @@ function Remove-sbRDSession {
                     # Need to use "using:" scope here to pass local hashtable to Job function, otherwise will pass all as null
                     $sb = { Invoke-RDUserLogoff @using:params }
                     Start-Job -ScriptBlock $sb -Name "Log Off [$($session.UserName)]"
-                }
-                else {
+                } else {
                     Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)]"
                     Invoke-RDUserLogoff @params
                     Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]" -ForegroundColor Green
