@@ -1,23 +1,24 @@
 ---
 external help file: ManageRDSessions-help.xml
 Module Name: ManageRDSessions
-online version:
+online version: 0.1.0
 schema: 2.0.0
 ---
 
 # Remove-sbRDSession
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.
 
 ## SYNTAX
 
 ```
-Remove-sbRDSession [-RDSession] <Object[]> [-AsJob] [-WhatIf] [-Confirm] [<CommonParameters>]
+Get-sbRdSession <parameters> | Remove-sbRDSession [-RDSession] <Object[]> [-AsJob] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any
+Remote Desktop session passed to it from the pipeline.
 
 ## EXAMPLES
 
