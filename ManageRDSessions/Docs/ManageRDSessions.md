@@ -17,16 +17,18 @@ within the ManageRDSessions module.
 
 # ManageRDSessions Module
 ## Description
-{{ Fill in the Description }}
+This module simplifies management of Remote Desktop sessions in a Remote Desktop deployment. Using the included
+cmdlets you can query sessions based on idle time, status and pass the results to cmdlets to disconnect, log off,
+or send messages to the session.
 
 ## ManageRDSessions Cmdlets
 ### [Disconnect-sbRDSession](Disconnect-sbRDSession.md)
-{{ Fill in the Description }}
+Disconnects the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession`.
 
 
 ### [Remove-sbRDSession](Remove-sbRDSession.md)
-{{ Fill in the Description }}
+Logs off the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession`.
 
 ### [Send-sbRDMessage](Send-sbRDMessage.md)
-{{ Fill in the Description }}
+Sends a specified message to the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession`.
 

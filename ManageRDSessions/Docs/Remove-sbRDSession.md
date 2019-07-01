@@ -24,15 +24,24 @@ Remote Desktop session passed to it from the pipeline.
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Get-sbRDSession <parameters> | Remove-sbRDSession
 ```
 
-{{ Add example description here }}
+Logs off the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession` - running the
+cmdlet this way will wait for each session to complete log off before continuing to the next.
+
+### Example 2
+```powershell
+PS C:\> Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
+```
+
+Logs off the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession` - running the
+cmdlet this way will start all log off tasks as background jobs, which you can query with `Get-Job | Wait-Job`.
 
 ## PARAMETERS
 
 ### -AsJob
-{{ Fill AsJob Description }}
+Run the session log offs as background jobs, in parallel.
 
 ```yaml
 Type: SwitchParameter
@@ -62,7 +71,7 @@ Accept wildcard characters: False
 ```
 
 ### -RDSession
-{{ Fill RDSession Description }}
+Requires an object passed by `Get-sbRDSession`.
 
 ```yaml
 Type: Object[]

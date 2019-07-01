@@ -8,7 +8,7 @@ schema: 2.0.0
 # Send-sbRDMessage
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Send a message to one or more Remote Desktop sessions.
 
 ## SYNTAX
 
@@ -18,16 +18,18 @@ Send-sbRDMessage [-MessageTitle] <String> [-MessageBody] <String> [-RDSession] <
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This cmdlet, which requires objects passed in from the `Get-sbRDSession` cmdlet, will send a specified message to
+the specified session(s).
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Get-sbRDSession <parameters> | Send-sbRDMessage -MessageTitle 'Please Save your Work' -MessageBody 'This
+server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'
 ```
 
-{{ Add example description here }}
+Sends a warning message concerning a server restart to all sessions passed from `Get-sbRDSession`.
 
 ## PARAMETERS
 
@@ -47,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -MessageBody
-{{ Fill MessageBody Description }}
+The main body of the message to send.
 
 ```yaml
 Type: String
@@ -62,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -MessageTitle
-{{ Fill MessageTitle Description }}
+The title of the message to send.
 
 ```yaml
 Type: String
@@ -77,7 +79,7 @@ Accept wildcard characters: False
 ```
 
 ### -RDSession
-{{ Fill RDSession Description }}
+Requires an object passed by `Get-sbRDSession`.
 
 ```yaml
 Type: Object[]

@@ -1,14 +1,14 @@
 ---
 external help file: ManageRDSessions-help.xml
 Module Name: ManageRDSessions
-online version:
+online version: 0.1.0
 schema: 2.0.0
 ---
 
 # Disconnect-sbRDSession
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Disconnect one or more Remote Desktop sessions.
 
 ## SYNTAX
 
@@ -17,16 +17,17 @@ Disconnect-sbRDSession [-RDSession] <Object[]> [-WhatIf] [-Confirm] [<CommonPara
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any
+Remote Desktop session passed to it from the pipeline.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Get-sbRDSession <parameters> | Disconnect-sbRDSession
 ```
 
-{{ Add example description here }}
+Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
 
 ## PARAMETERS
 
@@ -46,7 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -RDSession
-{{ Fill RDSession Description }}
+Requires an object passed by `Get-sbRDSession`.
 
 ```yaml
 Type: Object[]
@@ -81,7 +82,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.Object[]
+### System.Object
 
 ## OUTPUTS
 
