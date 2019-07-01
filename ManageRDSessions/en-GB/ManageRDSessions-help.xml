@@ -6,11 +6,11 @@
       <command:verb>Disconnect</command:verb>
       <command:noun>sbRDSession</command:noun>
       <maml:description>
-        <maml:para>{{ Fill in the Synopsis }}</maml:para>
+        <maml:para>Disconnect one or more Remote Desktop sessions.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>{{ Fill in the Description }}</maml:para>
+      <maml:para>This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any Remote Desktop session passed to it from the pipeline.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -18,7 +18,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
           <maml:name>RDSession</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill RDSession Description }}</maml:para>
+            <maml:para>Requires an object passed by `Get-sbRDSession`.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
           <dev:type>
@@ -67,7 +67,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
         <maml:name>RDSession</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill RDSession Description }}</maml:para>
+          <maml:para>Requires an object passed by `Get-sbRDSession`.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
         <dev:type>
@@ -92,7 +92,7 @@
     <command:inputTypes>
       <command:inputType>
         <dev:type>
-          <maml:name>System.Object[]</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -117,13 +117,30 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <dev:code>PS C:\&gt; Get-sbRDSession &lt;parameters&gt; | Disconnect-sbRDSession</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para>Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
-    <command:relatedLinks />
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Remove-sbRDSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Send-sbRDMessage</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-sbRDSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
@@ -409,11 +426,11 @@ IdleTime         : 51</dev:code>
       <command:verb>Remove</command:verb>
       <command:noun>sbRDSession</command:noun>
       <maml:description>
-        <maml:para>{{ Fill in the Synopsis }}</maml:para>
+        <maml:para>Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>{{ Fill in the Description }}</maml:para>
+      <maml:para>This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any Remote Desktop session passed to it from the pipeline.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -421,7 +438,7 @@ IdleTime         : 51</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
           <maml:name>RDSession</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill RDSession Description }}</maml:para>
+            <maml:para>Requires an object passed by `Get-sbRDSession`.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
           <dev:type>
@@ -433,7 +450,7 @@ IdleTime         : 51</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>AsJob</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill AsJob Description }}</maml:para>
+            <maml:para>Run the session log offs as background jobs, in parallel.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -469,7 +486,7 @@ IdleTime         : 51</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>AsJob</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill AsJob Description }}</maml:para>
+          <maml:para>Run the session log offs as background jobs, in parallel.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -493,7 +510,7 @@ IdleTime         : 51</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
         <maml:name>RDSession</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill RDSession Description }}</maml:para>
+          <maml:para>Requires an object passed by `Get-sbRDSession`.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
         <dev:type>
@@ -543,13 +560,37 @@ IdleTime         : 51</dev:code>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <dev:code>PS C:\&gt; Get-sbRDSession &lt;parameters&gt; | Remove-sbRDSession</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para>Logs off the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession` - running the cmdlet this way will wait for each session to complete log off before continuing to the next.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-sbRDSession &lt;parameters&gt; | Remove-sbRDSession -AsJob</dev:code>
+        <dev:remarks>
+          <maml:para>Logs off the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession` - running the cmdlet this way will start all log off tasks as background jobs, which you can query with `Get-Job | Wait-Job`.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
-    <command:relatedLinks />
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Disconnect-sbRDSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Send-sbRDMessage</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-sbRDSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
@@ -557,11 +598,11 @@ IdleTime         : 51</dev:code>
       <command:verb>Send</command:verb>
       <command:noun>sbRDMessage</command:noun>
       <maml:description>
-        <maml:para>{{ Fill in the Synopsis }}</maml:para>
+        <maml:para>Send a message to one or more Remote Desktop sessions.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>{{ Fill in the Description }}</maml:para>
+      <maml:para>This cmdlet, which requires objects passed in from the `Get-sbRDSession` cmdlet, will send a specified message to the specified session(s).</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -569,7 +610,7 @@ IdleTime         : 51</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="Title">
           <maml:name>MessageTitle</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill MessageTitle Description }}</maml:para>
+            <maml:para>The title of the message to send.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -581,7 +622,7 @@ IdleTime         : 51</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Body">
           <maml:name>MessageBody</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill MessageBody Description }}</maml:para>
+            <maml:para>The main body of the message to send.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -593,7 +634,7 @@ IdleTime         : 51</dev:code>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="2" aliases="none">
           <maml:name>RDSession</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill RDSession Description }}</maml:para>
+            <maml:para>Requires an object passed by `Get-sbRDSession`.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
           <dev:type>
@@ -642,7 +683,7 @@ IdleTime         : 51</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Body">
         <maml:name>MessageBody</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill MessageBody Description }}</maml:para>
+          <maml:para>The main body of the message to send.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -654,7 +695,7 @@ IdleTime         : 51</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="Title">
         <maml:name>MessageTitle</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill MessageTitle Description }}</maml:para>
+          <maml:para>The title of the message to send.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -666,7 +707,7 @@ IdleTime         : 51</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="2" aliases="none">
         <maml:name>RDSession</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill RDSession Description }}</maml:para>
+          <maml:para>Requires an object passed by `Get-sbRDSession`.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
         <dev:type>
@@ -716,12 +757,26 @@ IdleTime         : 51</dev:code>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <dev:code>PS C:\&gt; Get-sbRDSession &lt;parameters&gt; | Send-sbRDMessage -MessageTitle 'Please Save your Work' -MessageBody 'This
+server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para>Sends a warning message concerning a server restart to all sessions passed from `Get-sbRDSession`.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
-    <command:relatedLinks />
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Remove-sbRDSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Disconnect-sbRDSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-sbRDSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
   </command:command>
 </helpItems>
