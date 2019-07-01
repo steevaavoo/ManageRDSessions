@@ -87,6 +87,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+[Remove-sbRDSession](Remove-sbRDSession.md)
+
+[Send-sbRDMessage](Send-sbRDMessage.md)
+
+[Get-sbRDSession](Get-sbRDSession.md)

@@ -31,4 +31,3 @@ Logs off the Remote Desktop session(s) passed along the pipeline from `Get-sbRDS
 
 ### [Send-sbRDMessage](Send-sbRDMessage.md)
 Sends a specified message to the Remote Desktop session(s) passed along the pipeline from `Get-sbRDSession`.
-

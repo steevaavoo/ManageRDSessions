@@ -119,6 +119,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+[Remove-sbRDSession](Remove-sbRDSession.md)
+
+[Disconnect-sbRDSession](Disconnect-sbRDSession.md)
+
+[Get-sbRDSession](Get-sbRDSession.md)
