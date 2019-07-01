@@ -84,7 +84,7 @@ function Get-sbRDSession {
 
 function Disconnect-sbRDSession {
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', HelpUri = "https://bit.ly/304bR3G")]
     param (
         # Accepting Pipeline ByValue and requiring custom Type - also added [Object[]] to make an array, because this,
         # when supported by a ForEach block in the receiving Function's Process block, will allow someone to output
@@ -124,7 +124,7 @@ function Disconnect-sbRDSession {
 
 function Remove-sbRDSession {
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', HelpUri = "https://bit.ly/304MFK2")]
     param (
         # Accepting Pipeline ByValue and requiring custom Type - also added [Object[]] to make an array, because this,
         # when supported by a ForEach block in the receiving Function's Process block, will allow someone to output
@@ -173,7 +173,7 @@ function Remove-sbRDSession {
 function Send-sbRDMessage {
     # Adding a WhatIf/Confirm setting because this involves messaging users in Production, so professionalism counts and this allows mistakes
     # to be avoided
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', HelpUri = "https://bit.ly/320aV1P")]
     param (
         [Parameter(Mandatory = $true)]
         [Alias('Title')]
