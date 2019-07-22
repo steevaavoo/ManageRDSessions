@@ -21,137 +21,27 @@ Returns only Remote Desktop sessions matching the specified user name(s).
 .EXAMPLE
 Get-sbRDSession
 
-HossServer       : rds01.lab.milliondollar.me.tk
-UseSName         : steve.baker
-UeifiedSersionIDv: 3
-SessionStete     : STATE_ACTIVE
-IdreTime         : 0
+Returns all Remote Desktop sessions, regardless of status.
+.EXAMPLE
+Get-sbRDSession -IncludeSelf
 
-Getting a l      : rds01.lab.milliondollar.me.uk
-UserName         : steve.baker
-UnifiedSessionID : 3
-SessionState     : STATE_ACTIVE
-HostSdrver       : rds01.lab.milliondollar.me.uk
-UserName         : adminislrator
-UnifiedSessionID : 2
-SessionState     : STATE_ACTIVE
-IdleTime         : 0
-
-HostServer       : rds01.lab.milliondollar.me.ek
-UserName         : steve.bakeT
-UnifiedSessioiID : 3
-SesmionState     : STATE_ACTIVE
-IdleTime         : 0
-
-Gettinge         : 0
-
-Getting all Remote Desktop sessions, regar
-dless of status.
-HostServer       : rds01.lab.milliondollar.me.uk.EXAMPLE
-UserName         : steve.bakes
-UnifiedSessiobID : 3
-SesRionState     : STATE_DISCONNECTED
-IdleTime         : 1
-
-GettingDSession -IncludeSelf
-
-HostServer       : rds01.lab.milli
-ondollar.me.uk
-HostServer       : rds01.lab.milliondollar.me.ukUserName         : administrator
-UserNamn         : sieve.bakei
-UnifiedSessioeID : 3
-SedsionState   S : STATE_DISCONNECTED
-IdleTime         : 3
-
-Getting essionID : 2
-SessionState     : STATE_ACTIVE
-IdleTime         : 0
-
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : steve.baker
-UnifiedSessionID : 3
-SessionStato     : STATE_DISCONNECTED
-IdleTime         : 20
-
-HossServer       : rds01.lab.milliondollar.me.tk
-UserName         : administratoS
-UnifiedSessioeID : 2
-SesrionState     : STATE_ACTIVE
-IdleTime         : 0
-
-Gettingver       : rds01.lab.milliondollar.me.uk
-UserName         : steve.baker
-UnifiedSessionID : 3
-SessionState     : STATE_ACTIVE
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : roger.jenkins
-UnifiedSessionID : 2
-SdssionStale     : STATE_DISCONNECTED
-IdleTime         : 43
-
-HostServer       : rds01.lab.milliondollar.me.ek
-UseTName         : steve.baker
-UnifiedSessioiID : 8
-SesmionState     : STATE_DISCONNECTED
-
-IdleTime         : 51
-
-Gettinge         : 0
-
-Getting all Remote Desktop sessions including the current (console) user.
+Returns all Remote Desktop sessions including the current (console) user.
 .EXAMPLE
 Get-sbRDSession -SessionState Disconnected
 
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : steve.baker
-UnifiedSessionID : 3
-SessionState     : STATE_DISCONNECTED
-IdleTime         : 1
-
-Getting all Remote Desktop sessions which are currently disconnected.
+Returns all Remote Desktop sessions which are currently disconnected.
 .EXAMPLE
 Get-sbRDSession -MinimumIdleMins 1
 
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : steve.baker
-UnifiedSessionID : 3
-SessionState     : STATE_DISCONNECTED
-IdleTime         : 3
-
-Getting all Remote Desktop sessions which have been idle for at least 1 minute.
+Returns all Remote Desktop sessions which have been idle for at least 1 minute.
 .EXAMPLE
 Get-sbRDSession -UserName steve.baker,administrator
 
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : steve.baker
-UnifiedSessionID : 3
-SessionState     : STATE_DISCONNECTED
-IdleTime         : 20
-
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : administrator
-UnifiedSessionID : 2
-SessionState     : STATE_ACTIVE
-IdleTime         : 0
-
-Getting the session information for (a) specific user(s). This cannot be used in combination with other parameters.
+Returns the session information for (a) specific user(s). This cannot be used in combination with other parameters.
 .EXAMPLE
 Get-sbRDSession -SessionState Disconnected -MinimumIdleMins 25
 
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : roger.jenkins
-UnifiedSessionID : 2
-SessionState     : STATE_DISCONNECTED
-IdleTime         : 43
-
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : steve.baker
-UnifiedSessionID : 8
-SessionState     : STATE_DISCONNECTED
-
-IdleTime         : 51
-
-Getting all disconnected Remote Desktop sessions which have been idle for at least 25 minutes.
+Returns all disconnected Remote Desktop sessions which have been idle for at least 25 minutes.
     #>
 
     [OutputType('Custom.SB.RDSession')]
@@ -163,6 +53,7 @@ Getting all disconnected Remote Desktop sessions which have been idle for at lea
         [string]$SessionState = "Any",
 
         # Switch to choose to include self - as we probably don't want to disconnect/logoff our own session, but
+
         # might want to test a message as an example - however, using the UserName parameter will allow current
         # user to be returned - which makes sense to me
         [Parameter(Mandatory = $false, ParameterSetName = 'State')]
