@@ -2,46 +2,46 @@
 
 function Get-sbRDSession {
     <#
-.SYNOPSIS
-Get current sessions in a Remote Desktop Services deployment.
-.DESCRIPTION
-This cmdlet will return all Sessions in the current Remote Desktop Services deployment. Narrow results by user,
-or by a combination of minimum number of Idle Session minutes, Session State (Active, Disconnected, etc.) and choose
-whether to include yourself (the Admin user).
-.PARAMETER SessionState
-Returns only Remote Desktop sessions matching the specified State.
-Accepts: Active, Any, Connected, Disconnected or Idle.
-.PARAMETER IncludeSelf
-When enabled, this parameter will include the current (console) user within any matching search results. The
-current user is omitted by default as we don't normally want to send messages to/disconnect/log off ourselves.
-.PARAMETER MinimumIdleMins
-Specifies the minimum number of minutes for which each returned Remote Desktop should have been idle.
-.PARAMETER UserName
-Returns only Remote Desktop sessions matching the specified user name(s).
-.EXAMPLE
-Get-sbRDSession
+    .SYNOPSIS
+    Get current sessions in a Remote Desktop Services deployment.
+    .DESCRIPTION
+    This cmdlet will return all Sessions in the current Remote Desktop Services deployment. Narrow results by user,
+    or by a combination of minimum number of Idle Session minutes, Session State (Active, Disconnected, etc.) and choose
+    whether to include yourself (the Admin user).
+    .PARAMETER SessionState
+    Returns only Remote Desktop sessions matching the specified State.
+    Accepts: Active, Any, Connected, Disconnected or Idle.
+    .PARAMETER IncludeSelf
+    When enabled, this parameter will include the current (console) user within any matching search results. The
+    current user is omitted by default as we don't normally want to send messages to/disconnect/log off ourselves.
+    .PARAMETER MinimumIdleMins
+    Specifies the minimum number of minutes for which each returned Remote Desktop should have been idle.
+    .PARAMETER UserName
+    Returns only Remote Desktop sessions matching the specified user name(s).
+    .EXAMPLE
+    Get-sbRDSession
 
-Returns all Remote Desktop sessions, regardless of status.
-.EXAMPLE
-Get-sbRDSession -IncludeSelf
+    Returns all Remote Desktop sessions, regardless of status.
+    .EXAMPLE
+    Get-sbRDSession -IncludeSelf
 
-Returns all Remote Desktop sessions including the current (console) user.
-.EXAMPLE
-Get-sbRDSession -SessionState Disconnected
+    Returns all Remote Desktop sessions including the current (console) user.
+    .EXAMPLE
+    Get-sbRDSession -SessionState Disconnected
 
-Returns all Remote Desktop sessions which are currently disconnected.
-.EXAMPLE
-Get-sbRDSession -MinimumIdleMins 1
+    Returns all Remote Desktop sessions which are currently disconnected.
+    .EXAMPLE
+    Get-sbRDSession -MinimumIdleMins 1
 
-Returns all Remote Desktop sessions which have been idle for at least 1 minute.
-.EXAMPLE
-Get-sbRDSession -UserName steve.baker,administrator
+    Returns all Remote Desktop sessions which have been idle for at least 1 minute.
+    .EXAMPLE
+    Get-sbRDSession -UserName steve.baker,administrator
 
-Returns the session information for (a) specific user(s). This cannot be used in combination with other parameters.
-.EXAMPLE
-Get-sbRDSession -SessionState Disconnected -MinimumIdleMins 25
+    Returns the session information for (a) specific user(s). This cannot be used in combination with other parameters.
+    .EXAMPLE
+    Get-sbRDSession -SessionState Disconnected -MinimumIdleMins 25
 
-Returns all disconnected Remote Desktop sessions which have been idle for at least 25 minutes.
+    Returns all disconnected Remote Desktop sessions which have been idle for at least 25 minutes.
     #>
 
     [OutputType('Custom.SB.RDSession')]
@@ -90,59 +90,59 @@ Returns all disconnected Remote Desktop sessions which have been idle for at lea
                 Get-RDUserSession | Where-Object {
                     $_.UserName -like "*$user*"
                 }
-            }#foreach user
-        } else {
-            if ($IncludeSelf) {
-                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
-                $sessions = Get-RDUserSession | Where-Object {
-                    $_.SessionState -like $stateLookup.$SessionState`
-                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-                }
-            } else {
-                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
-                $sessions = Get-RDUserSession | Where-Object {
-                    $_.SessionState -like $stateLookup.$SessionState`
-                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-                        -and $_.UserName -ne "$env:USERNAME"
-                }
+        }#foreach user
+    } else {
+        if ($IncludeSelf) {
+            Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
+            $sessions = Get-RDUserSession | Where-Object {
+                $_.SessionState -like $stateLookup.$SessionState`
+                    -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
             }
-        } #if IncludeSelf
-
-
-        foreach ($session in $sessions) {
-            # Creating and Outputting PSCustomObject
-            [PSCustomObject]@{
-                PSTypeName       = "Custom.SB.RDSession"
-                HostServer       = $session.HostServer
-                UserName         = $session.UserName
-                UnifiedSessionID = $session.UnifiedSessionID
-                SessionState     = $session.SessionState
-                IdleTime         = ($session.IdleTime / 60000 -as [int])
-            }
+    } else {
+        Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
+        $sessions = Get-RDUserSession | Where-Object {
+            $_.SessionState -like $stateLookup.$SessionState`
+                -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+                -and $_.UserName -ne "$env:USERNAME"
         }
-    } #process
+}
+} #if IncludeSelf
 
-    End {
-        #Intentionally empty
+
+foreach ($session in $sessions) {
+    # Creating and Outputting PSCustomObject
+    [PSCustomObject]@{
+        PSTypeName       = "Custom.SB.RDSession"
+        HostServer       = $session.HostServer
+        UserName         = $session.UserName
+        UnifiedSessionID = $session.UnifiedSessionID
+        SessionState     = $session.SessionState
+        IdleTime         = ($session.IdleTime / 60000 -as [int])
     }
+}
+} #process
+
+End {
+    #Intentionally empty
+}
 } #function
 
 function Disconnect-sbRDSession {
     <#
-.SYNOPSIS
-Disconnect one or more Remote Desktop sessions.
+    .SYNOPSIS
+    Disconnect one or more Remote Desktop sessions.
 
-.DESCRIPTION
-This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any
-Remote Desktop session passed to it from the pipeline.
+    .DESCRIPTION
+    This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any
+    Remote Desktop session passed to it from the pipeline.
 
-.PARAMETER RDSession
-Requires an object passed by `Get-sbRDSession`.
+    .PARAMETER RDSession
+    Requires an object passed by `Get-sbRDSession`.
 
-.EXAMPLE
-Get-sbRDSession <parameters> | Disconnect-sbRDSession
+    .EXAMPLE
+    Get-sbRDSession <parameters> | Disconnect-sbRDSession
 
-Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
+    Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', HelpUri = "https://bit.ly/304bR3G")]
@@ -185,21 +185,21 @@ Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
 
 function Remove-sbRDSession {
     <#
-.SYNOPSIS
-Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.
+    .SYNOPSIS
+    Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.
 
-.DESCRIPTION
-This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any
-Remote Desktop session passed to it from the pipeline.
+    .DESCRIPTION
+    This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any
+    Remote Desktop session passed to it from the pipeline.
 
-.PARAMETER RDSession
-Requires an object passed by `Get-sbRDSession`.
+    .PARAMETER RDSession
+    Requires an object passed by `Get-sbRDSession`.
 
-.PARAMETER AsJob
-Run the session log offs as background jobs, in parallel.
+    .PARAMETER AsJob
+    Run the session log offs as background jobs, in parallel.
 
-.EXAMPLE
-Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
+    .EXAMPLE
+    Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', HelpUri = "https://bit.ly/304MFK2")]
@@ -250,27 +250,27 @@ Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
 
 function Send-sbRDMessage {
     <#
-.SYNOPSIS
-Send a message to one or more Remote Desktop sessions.
+    .SYNOPSIS
+    Send a message to one or more Remote Desktop sessions.
 
-.DESCRIPTION
-This cmdlet, which requires objects passed in from the Get-sbRDSession cmdlet, will send a specified message to the
-specified session(s).
+    .DESCRIPTION
+    This cmdlet, which requires objects passed in from the Get-sbRDSession cmdlet, will send a specified message to the
+    specified session(s).
 
-.PARAMETER MessageTitle
-The title of the message to send.
+    .PARAMETER MessageTitle
+    The title of the message to send.
 
-.PARAMETER MessageBody
-The main body of the message to send.
+    .PARAMETER MessageBody
+    The main body of the message to send.
 
-.PARAMETER RDSession
-Requires an object passed by Get-sbRDSession.
+    .PARAMETER RDSession
+    Requires an object passed by Get-sbRDSession.
 
-.EXAMPLE
-Get-sbRDSession <parameters> | Send-sbRDMessage -MessageTitle 'Please Save your Work' -MessageBody 'This
-server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'
+    .EXAMPLE
+    Get-sbRDSession <parameters> | Send-sbRDMessage -MessageTitle 'Please Save your Work' -MessageBody 'This
+    server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'
 
-Sends a warning message concerning a server restart to all sessions passed from Get-sbRDSession.
+    Sends a warning message concerning a server restart to all sessions passed from Get-sbRDSession.
     #>
 
     # Adding a WhatIf/Confirm setting because this involves messaging users in Production, so professionalism counts and this allows mistakes
