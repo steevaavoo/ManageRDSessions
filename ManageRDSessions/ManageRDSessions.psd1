@@ -24,13 +24,13 @@
     Author            = 'Steve Baker'
 
     # Company or vendor of this module
-    CompanyName       = "Baker's Forge"
+    CompanyName       = "The Baker's Foundry"
 
     # Copyright statement for this module
-    Copyright         = '(c) 2019 Steve. All rights reserved.'
+    Copyright         = '(c) 2019 Steve Baker. All rights reserved.'
 
     # Description of the functionality provided by this module
-    # Description = ''
+    Description       = 'Easily and quickly find, manage and message user(s) in a Windows Server 2012+ Remote Desktop Services Deployment'
 
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion = ''

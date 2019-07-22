@@ -18,7 +18,7 @@ Import-Module $ModulePath -Force
 # When testing against an entire module, make sure to specify Module Scope
 InModuleScope $ModuleName {
     Describe "Get-sbRDSession" {
-        Mock Get-RdUserSession { return 1 } -ModuleName ManageRDSessions
+        Mock Get-RdUserSession { return 1 } -ModuleName $ModuleName
         It "gets all rdsessions from the RDS session collection" {
             Get-sbRDSession
             Assert-MockCalled Get-RdUserSession -Exactly 1 -Scope It
@@ -26,6 +26,6 @@ InModuleScope $ModuleName {
 
         It "only accepts active, idle, disconnected, connected or any" {
             { Get-sbRDSession -SessionState Dancing } | Should Throw
+        }
     }
-}
 } #in modulescope
