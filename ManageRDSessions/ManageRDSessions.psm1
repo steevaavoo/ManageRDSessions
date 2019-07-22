@@ -3,45 +3,45 @@
 function Get-sbRDSession {
     <#
     .SYNOPSIS
-    Get current sessions in a Remote Desktop Services deployment.
+        Get current sessions in a Remote Desktop Services deployment.
     .DESCRIPTION
-    This cmdlet will return all Sessions in the current Remote Desktop Services deployment. Narrow results by user,
-    or by a combination of minimum number of Idle Session minutes, Session State (Active, Disconnected, etc.) and choose
-    whether to include yourself (the Admin user).
+        This cmdlet will return all Sessions in the current Remote Desktop Services deployment. Narrow results by user,
+        or by a combination of minimum number of Idle Session minutes, Session State (Active, Disconnected, etc.) and choose
+        whether to include yourself (the Admin user).
     .PARAMETER SessionState
-    Returns only Remote Desktop sessions matching the specified State.
-    Accepts: Active, Any, Connected, Disconnected or Idle.
+        Returns only Remote Desktop sessions matching the specified State.
+        Accepts: Active, Any, Connected, Disconnected or Idle.
     .PARAMETER IncludeSelf
-    When enabled, this parameter will include the current (console) user within any matching search results. The
-    current user is omitted by default as we don't normally want to send messages to/disconnect/log off ourselves.
+        When enabled, this parameter will include the current (console) user within any matching search results. The
+        current user is omitted by default as we don't normally want to send messages to/disconnect/log off ourselves.
     .PARAMETER MinimumIdleMins
-    Specifies the minimum number of minutes for which each returned Remote Desktop should have been idle.
+        Specifies the minimum number of minutes for which each returned Remote Desktop should have been idle.
     .PARAMETER UserName
-    Returns only Remote Desktop sessions matching the specified user name(s).
+        Returns only Remote Desktop sessions matching the specified user name(s).
     .EXAMPLE
-    Get-sbRDSession
+        Get-sbRDSession
 
-    Returns all Remote Desktop sessions, regardless of status.
+        Returns all Remote Desktop sessions, regardless of status.
     .EXAMPLE
-    Get-sbRDSession -IncludeSelf
+        Get-sbRDSession -IncludeSelf
 
-    Returns all Remote Desktop sessions including the current (console) user.
+        Returns all Remote Desktop sessions including the current (console) user.
     .EXAMPLE
-    Get-sbRDSession -SessionState Disconnected
+        Get-sbRDSession -SessionState Disconnected
 
-    Returns all Remote Desktop sessions which are currently disconnected.
+        Returns all Remote Desktop sessions which are currently disconnected.
     .EXAMPLE
-    Get-sbRDSession -MinimumIdleMins 1
+        Get-sbRDSession -MinimumIdleMins 1
 
-    Returns all Remote Desktop sessions which have been idle for at least 1 minute.
+        Returns all Remote Desktop sessions which have been idle for at least 1 minute.
     .EXAMPLE
-    Get-sbRDSession -UserName steve.baker,administrator
+        Get-sbRDSession -UserName steve.baker,administrator
 
-    Returns the session information for (a) specific user(s). This cannot be used in combination with other parameters.
+        Returns the session information for (a) specific user(s). This cannot be used in combination with other parameters.
     .EXAMPLE
-    Get-sbRDSession -SessionState Disconnected -MinimumIdleMins 25
+        Get-sbRDSession -SessionState Disconnected -MinimumIdleMins 25
 
-    Returns all disconnected Remote Desktop sessions which have been idle for at least 25 minutes.
+        Returns all disconnected Remote Desktop sessions which have been idle for at least 25 minutes.
     #>
 
     [OutputType('Custom.SB.RDSession')]
@@ -130,19 +130,19 @@ End {
 function Disconnect-sbRDSession {
     <#
     .SYNOPSIS
-    Disconnect one or more Remote Desktop sessions.
+        Disconnect one or more Remote Desktop sessions.
 
     .DESCRIPTION
-    This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any
-    Remote Desktop session passed to it from the pipeline.
+        This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any
+        Remote Desktop session passed to it from the pipeline.
 
     .PARAMETER RDSession
-    Requires an object passed by `Get-sbRDSession`.
+        Requires an object passed by `Get-sbRDSession`.
 
     .EXAMPLE
-    Get-sbRDSession <parameters> | Disconnect-sbRDSession
+        Get-sbRDSession <parameters> | Disconnect-sbRDSession
 
-    Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
+        Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', HelpUri = "https://bit.ly/304bR3G")]
@@ -186,20 +186,20 @@ function Disconnect-sbRDSession {
 function Remove-sbRDSession {
     <#
     .SYNOPSIS
-    Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.
+        Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.
 
     .DESCRIPTION
-    This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any
-    Remote Desktop session passed to it from the pipeline.
+        This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any
+        Remote Desktop session passed to it from the pipeline.
 
     .PARAMETER RDSession
-    Requires an object passed by `Get-sbRDSession`.
+        Requires an object passed by `Get-sbRDSession`.
 
     .PARAMETER AsJob
-    Run the session log offs as background jobs, in parallel.
+        Run the session log offs as background jobs, in parallel.
 
     .EXAMPLE
-    Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
+        Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', HelpUri = "https://bit.ly/304MFK2")]
@@ -251,26 +251,26 @@ function Remove-sbRDSession {
 function Send-sbRDMessage {
     <#
     .SYNOPSIS
-    Send a message to one or more Remote Desktop sessions.
+        Send a message to one or more Remote Desktop sessions.
 
     .DESCRIPTION
-    This cmdlet, which requires objects passed in from the Get-sbRDSession cmdlet, will send a specified message to the
-    specified session(s).
+        This cmdlet, which requires objects passed in from the Get-sbRDSession cmdlet, will send a specified message to the
+        specified session(s).
 
     .PARAMETER MessageTitle
-    The title of the message to send.
+        The title of the message to send.
 
     .PARAMETER MessageBody
-    The main body of the message to send.
+        The main body of the message to send.
 
     .PARAMETER RDSession
-    Requires an object passed by Get-sbRDSession.
+        Requires an object passed by Get-sbRDSession.
 
     .EXAMPLE
-    Get-sbRDSession <parameters> | Send-sbRDMessage -MessageTitle 'Please Save your Work' -MessageBody 'This
-    server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'
+        Get-sbRDSession <parameters> | Send-sbRDMessage -MessageTitle 'Please Save your Work' -MessageBody 'This
+        server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'
 
-    Sends a warning message concerning a server restart to all sessions passed from Get-sbRDSession.
+        Sends a warning message concerning a server restart to all sessions passed from Get-sbRDSession.
     #>
 
     # Adding a WhatIf/Confirm setting because this involves messaging users in Production, so professionalism counts and this allows mistakes
