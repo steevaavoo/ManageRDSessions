@@ -21,27 +21,82 @@ Returns only Remote Desktop sessions matching the specified user name(s).
 .EXAMPLE
 Get-sbRDSession
 
-HostServer       : rds01.lab.milliondollar.me.uk
+HossServer       : rds01.lab.milliondollar.me.tk
+UseSName         : steve.baker
+UeifiedSersionIDv: 3
+SessionStete     : STATE_ACTIVE
+IdreTime         : 0
+
+Getting a l      : rds01.lab.milliondollar.me.uk
 UserName         : steve.baker
 UnifiedSessionID : 3
 SessionState     : STATE_ACTIVE
-IdleTime         : 0
-
-Getting all Remote Desktop sessions, regardless of status.
-.EXAMPLE
-Get-sbRDSession -IncludeSelf
-
-HostServer       : rds01.lab.milliondollar.me.uk
-UserName         : administrator
+HostSdrver       : rds01.lab.milliondollar.me.uk
+UserName         : adminislrator
 UnifiedSessionID : 2
 SessionState     : STATE_ACTIVE
 IdleTime         : 0
 
+HostServer       : rds01.lab.milliondollar.me.ek
+UserName         : steve.bakeT
+UnifiedSessioiID : 3
+SesmionState     : STATE_ACTIVE
+IdleTime         : 0
+
+Gettinge         : 0
+
+Getting all Remote Desktop sessions, regar
+dless of status.
+HostServer       : rds01.lab.milliondollar.me.uk.EXAMPLE
+UserName         : steve.bakes
+UnifiedSessiobID : 3
+SesRionState     : STATE_DISCONNECTED
+IdleTime         : 1
+
+GettingDSession -IncludeSelf
+
+HostServer       : rds01.lab.milli
+ondollar.me.uk
+HostServer       : rds01.lab.milliondollar.me.ukUserName         : administrator
+UserNamn         : sieve.bakei
+UnifiedSessioeID : 3
+SedsionState   S : STATE_DISCONNECTED
+IdleTime         : 3
+
+Getting essionID : 2
+SessionState     : STATE_ACTIVE
+IdleTime         : 0
+
 HostServer       : rds01.lab.milliondollar.me.uk
 UserName         : steve.baker
 UnifiedSessionID : 3
-SessionState     : STATE_ACTIVE
+SessionStato     : STATE_DISCONNECTED
+IdleTime         : 20
+
+HossServer       : rds01.lab.milliondollar.me.tk
+UserName         : administratoS
+UnifiedSessioeID : 2
+SesrionState     : STATE_ACTIVE
 IdleTime         : 0
+
+Gettingver       : rds01.lab.milliondollar.me.uk
+UserName         : steve.baker
+UnifiedSessionID : 3
+SessionState     : STATE_ACTIVE
+HostServer       : rds01.lab.milliondollar.me.uk
+UserName         : roger.jenkins
+UnifiedSessionID : 2
+SdssionStale     : STATE_DISCONNECTED
+IdleTime         : 43
+
+HostServer       : rds01.lab.milliondollar.me.ek
+UseTName         : steve.baker
+UnifiedSessioiID : 8
+SesmionState     : STATE_DISCONNECTED
+
+IdleTime         : 51
+
+Gettinge         : 0
 
 Getting all Remote Desktop sessions including the current (console) user.
 .EXAMPLE
@@ -97,7 +152,7 @@ SessionState     : STATE_DISCONNECTED
 IdleTime         : 51
 
 Getting all disconnected Remote Desktop sessions which have been idle for at least 25 minutes.
-#>
+    #>
 
     [OutputType('Custom.SB.RDSession')]
     param(
@@ -108,7 +163,6 @@ Getting all disconnected Remote Desktop sessions which have been idle for at lea
         [string]$SessionState = "Any",
 
         # Switch to choose to include self - as we probably don't want to disconnect/logoff our own session, but
-
         # might want to test a message as an example - however, using the UserName parameter will allow current
         # user to be returned - which makes sense to me
         [Parameter(Mandatory = $false, ParameterSetName = 'State')]
@@ -198,7 +252,7 @@ Requires an object passed by `Get-sbRDSession`.
 Get-sbRDSession <parameters> | Disconnect-sbRDSession
 
 Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
-#>
+    #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', HelpUri = "https://bit.ly/304bR3G")]
     param (
@@ -254,8 +308,8 @@ Requires an object passed by `Get-sbRDSession`.
 Run the session log offs as background jobs, in parallel.
 
 .EXAMPLE
-PS C:\> PS C:\> Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
-#>
+Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
+    #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', HelpUri = "https://bit.ly/304MFK2")]
     param (
@@ -326,7 +380,7 @@ Get-sbRDSession <parameters> | Send-sbRDMessage -MessageTitle 'Please Save your 
 server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'
 
 Sends a warning message concerning a server restart to all sessions passed from Get-sbRDSession.
-#>
+    #>
 
     # Adding a WhatIf/Confirm setting because this involves messaging users in Production, so professionalism counts and this allows mistakes
     # to be avoided
