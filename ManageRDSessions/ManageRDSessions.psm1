@@ -131,14 +131,11 @@ function Disconnect-sbRDSession {
     <#
     .SYNOPSIS
         Disconnect one or more Remote Desktop sessions.
-
     .DESCRIPTION
         This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any
         Remote Desktop session passed to it from the pipeline.
-
     .PARAMETER RDSession
         Requires an object passed by `Get-sbRDSession`.
-
     .EXAMPLE
         Get-sbRDSession <parameters> | Disconnect-sbRDSession
 
@@ -187,17 +184,13 @@ function Remove-sbRDSession {
     <#
     .SYNOPSIS
         Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.
-
     .DESCRIPTION
         This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any
         Remote Desktop session passed to it from the pipeline.
-
     .PARAMETER RDSession
         Requires an object passed by `Get-sbRDSession`.
-
     .PARAMETER AsJob
         Run the session log offs as background jobs, in parallel.
-
     .EXAMPLE
         Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
     #>
@@ -252,20 +245,15 @@ function Send-sbRDMessage {
     <#
     .SYNOPSIS
         Send a message to one or more Remote Desktop sessions.
-
     .DESCRIPTION
         This cmdlet, which requires objects passed in from the Get-sbRDSession cmdlet, will send a specified message to the
         specified session(s).
-
     .PARAMETER MessageTitle
         The title of the message to send.
-
     .PARAMETER MessageBody
         The main body of the message to send.
-
     .PARAMETER RDSession
         Requires an object passed by Get-sbRDSession.
-
     .EXAMPLE
         Get-sbRDSession <parameters> | Send-sbRDMessage -MessageTitle 'Please Save your Work' -MessageBody 'This
         server will be rebooted in 5 minutes, to prevent loss of work, please save and close your work immediately.'
