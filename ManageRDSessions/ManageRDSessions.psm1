@@ -46,24 +46,23 @@ function Get-sbRDSession {
 
     [OutputType('Custom.SB.RDSession')]
     param(
-        [cmdletbinding(DefaultParameterSetName = 'State')]
-        [Parameter(Mandatory = $false, ParameterSetName = 'State')]
+        [cmdletbinding()]
+        [Parameter(Mandatory = $false)]
         [ValidateSet("Active", "Idle", "Connected", "Disconnected", "Any")]
         [Alias("State")]
         [string]$SessionState = "Any",
 
         # Switch to choose to include self - as we probably don't want to disconnect/logoff our own session, but
-
         # might want to test a message as an example - however, using the UserName parameter will allow current
         # user to be returned - which makes sense to me
-        [Parameter(Mandatory = $false, ParameterSetName = 'State')]
+        [Parameter(Mandatory = $false)]
         [Alias("Self")]
         [switch]$IncludeSelf = $false,
 
-        [Parameter(Mandatory = $false, ParameterSetName = 'State')]
+        [Parameter(Mandatory = $false)]
         [int]$MinimumIdleMins = 0,
 
-        [Parameter(Mandatory = $false, ParameterSetName = 'UserName')]
+        [Parameter(Mandatory = $false)]
         [Alias("Name")]
         [string[]]$UserName = $null
     )
@@ -90,42 +89,56 @@ function Get-sbRDSession {
                 Get-RDUserSession | Where-Object {
                     $_.UserName -like "*$user*"
                 }
-        }#foreach user
-    } else {
-        if ($IncludeSelf) {
-            Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
-            $sessions = Get-RDUserSession | Where-Object {
-                $_.SessionState -like $stateLookup.$SessionState`
-                    -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+            }#foreach user
+        } else {
+            if ($IncludeSelf) {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState`
+                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+                }
+            } else {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState`
+                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+                        -and $_.UserName -ne "$env:USERNAME"
+                }
             }
-    } else {
-        Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
-        $sessions = Get-RDUserSession | Where-Object {
-            $_.SessionState -like $stateLookup.$SessionState`
-                -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-                -and $_.UserName -ne "$env:USERNAME"
+        } #if IncludeSelf
+
+
+        foreach ($session in $sessions) {
+            # Creating and Outputting PSCustomObject
+            [PSCustomObject]@{
+                PSTypeName       = "Custom.SB.RDSession"
+                HostServer       = $session.HostServer
+                UserName         = $session.UserName
+                UnifiedSessionID = $session.UnifiedSessionID
+                SessionState     = $session.SessionState
+                IdleTime         = ($session.IdleTime / 60000 -as [int])
+            }
         }
-}
-} #if IncludeSelf
+    } #process
 
-
-foreach ($session in $sessions) {
-    # Creating and Outputting PSCustomObject
-    [PSCustomObject]@{
-        PSTypeName       = "Custom.SB.RDSession"
-        HostServer       = $session.HostServer
-        UserName         = $session.UserName
-        UnifiedSessionID = $session.UnifiedSessionID
-        SessionState     = $session.SessionState
-        IdleTime         = ($session.IdleTime / 60000 -as [int])
+    End {
+        #Intentionally empty
     }
-}
-} #process
-
-End {
-    #Intentionally empty
-}
 } #function
+
+$myType = "Custom.SB.RDSession"
+Update-TypeData -TypeName $myType -MemberType ScriptMethod -MemberName SendMessage -Value {
+    param([string]$MessageTitle, [string]$MessageBody)
+    $messageParams = @{
+        Hostserver       = $this.HostServer
+        UnifiedSessionId = $this.UnifiedSessionId
+        MessageTitle     = $MessageTitle
+        MessageBody      = $MessageBody
+    }
+    Write-Verbose "Sending message to $($session.UserName)"
+    Send-RDUserMessage @messageParamstyp
+} -force
+
 
 function Disconnect-sbRDSession {
     <#
