@@ -27,5 +27,17 @@ InModuleScope $ModuleName {
         It "only accepts active, idle, disconnected, connected or any" {
             { Get-sbRDSession -SessionState Dancing } | Should Throw
         }
+
     }
+    
+    Describe "Send-sbRDMessage" {
+        Mock Send-RDUserMessage { return 1 } -ModuleName $ModuleName
+        It "sends a message to piped in session" {
+            $testsession = Get-sbRDSession -IncludeSelf 
+            $testsession | Send-sbRDMessage -MessageTitle "Test" -MessageBody "Test" -Confirm:$false
+            Assert-MockCalled Send-RDUserMessage -Times 1 -Scope It
+        }
+       
+    }
+
 } #in modulescope
