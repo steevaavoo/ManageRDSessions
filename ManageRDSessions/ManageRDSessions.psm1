@@ -89,41 +89,43 @@ function Get-sbRDSession {
                 Get-RDUserSession | Where-Object {
                     $_.UserName -like "*$user*"
                 }
-        }#foreach user
-    } else {
-        if ($IncludeSelf) {
-            Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
-            $sessions = Get-RDUserSession | Where-Object {
-                $_.SessionState -like $stateLookup.$SessionState`
-                    -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-            }
-    } else {
-        Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
-        $sessions = Get-RDUserSession | Where-Object {
-            $_.SessionState -like $stateLookup.$SessionState`
-                -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-                -and $_.UserName -ne "$env:USERNAME"
+            }#foreach user
         }
-}
-} #if IncludeSelf
+        else {
+            if ($IncludeSelf) {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState`
+                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+                }
+            }
+            else {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState`
+                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
+                        -and $_.UserName -ne "$env:USERNAME"
+                }
+            }
+        } #if IncludeSelf
 
 
-foreach ($session in $sessions) {
-    # Creating and Outputting PSCustomObject
-    [PSCustomObject]@{
-        PSTypeName       = "Custom.SB.RDSession"
-        HostServer       = $session.HostServer
-        UserName         = $session.UserName
-        UnifiedSessionID = $session.UnifiedSessionID
-        SessionState     = $session.SessionState
-        IdleTime         = ($session.IdleTime / 60000 -as [int])
+        foreach ($session in $sessions) {
+            # Creating and Outputting PSCustomObject
+            [PSCustomObject]@{
+                PSTypeName       = "Custom.SB.RDSession"
+                HostServer       = $session.HostServer
+                UserName         = $session.UserName
+                UnifiedSessionID = $session.UnifiedSessionID
+                SessionState     = $session.SessionState
+                IdleTime         = ($session.IdleTime / 60000 -as [int])
+            }
+        }
+    } #process
+
+    End {
+        #Intentionally empty
     }
-}
-} #process
-
-End {
-    #Intentionally empty
-}
 } #function
 
 # Adding a Script Method to Get-sbRDSession to allow sending messages to the session(s) found.
@@ -156,7 +158,7 @@ function Disconnect-sbRDSession {
         Disconnect the Remote Desktop session(s) passed from Get-sbRDSession.
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', HelpUri = "https://bit.ly/304bR3G")]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param (
         # Accepting Pipeline ByValue and requiring custom Type - also added [Object[]] to make an array, because this,
         # when supported by a ForEach block in the receiving Function's Process block, will allow someone to output
@@ -209,7 +211,7 @@ function Remove-sbRDSession {
         Get-sbRDSession <parameters> | Remove-sbRDSession -AsJob
     #>
 
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', HelpUri = "https://bit.ly/304MFK2")]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param (
         # Accepting Pipeline ByValue and requiring custom Type - also added [Object[]] to make an array, because this,
         # when supported by a ForEach block in the receiving Function's Process block, will allow someone to output
@@ -241,7 +243,8 @@ function Remove-sbRDSession {
                     # Need to use "using:" scope here to pass local hashtable to Job function, otherwise will pass all as null
                     $sb = { Invoke-RDUserLogoff @using:params }
                     Start-Job -ScriptBlock $sb -Name "Log Off [$($session.UserName)]"
-                } else {
+                }
+                else {
                     Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)]"
                     Invoke-RDUserLogoff @params
                     Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]" -ForegroundColor Green
@@ -277,7 +280,7 @@ function Send-sbRDMessage {
 
     # Adding a WhatIf/Confirm setting because this involves messaging users in Production, so professionalism counts and this allows mistakes
     # to be avoided
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', HelpUri = "https://bit.ly/320aV1P")]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param (
         [Parameter(Mandatory = $true)]
         [Alias('Title')]
