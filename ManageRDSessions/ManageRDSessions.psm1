@@ -46,7 +46,7 @@ function Get-sbRDSession {
 
     [OutputType('Custom.SB.RDSession')]
     param(
-        [cmdletbinding()]
+        [CmdletBinding()]
         [Parameter(Mandatory = $false)]
         [ValidateSet("Active", "Idle", "Connected", "Disconnected", "Any")]
         [Alias("State")]
@@ -57,7 +57,7 @@ function Get-sbRDSession {
         # user to be returned - which makes sense to me
         [Parameter(Mandatory = $false)]
         [Alias("Self")]
-        [switch]$IncludeSelf = $false,
+        [switch]$IncludeSelf,
 
         [Parameter(Mandatory = $false)]
         [int]$MinimumIdleMins = 0,
@@ -66,10 +66,6 @@ function Get-sbRDSession {
         [Alias("Name")]
         [string[]]$UserName = $null
     )
-
-    Begin {
-        #Intentionally empty
-    }
 
     # Process block is required when outputting objects to the pipeline, otherwise only the final object will be passed
     Process {
@@ -89,43 +85,37 @@ function Get-sbRDSession {
                 Get-RDUserSession | Where-Object {
                     $_.UserName -like "*$user*"
                 }
-            }#foreach user
+        }#foreach user
+    } else {
+        if ($IncludeSelf) {
+            Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
+            $sessions = Get-RDUserSession | Where-Object {
+                $_.SessionState -like $stateLookup.$SessionState
+                -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
+            }
+    } else {
+        Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
+        $sessions = Get-RDUserSession | Where-Object {
+            $_.SessionState -like $stateLookup.$SessionState
+            -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
+            -and $_.UserName -ne "$env:USERNAME"
         }
-        else {
-            if ($IncludeSelf) {
-                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
-                $sessions = Get-RDUserSession | Where-Object {
-                    $_.SessionState -like $stateLookup.$SessionState`
-                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-                }
-            }
-            else {
-                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
-                $sessions = Get-RDUserSession | Where-Object {
-                    $_.SessionState -like $stateLookup.$SessionState`
-                        -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins`
-                        -and $_.UserName -ne "$env:USERNAME"
-                }
-            }
-        } #if IncludeSelf
+}
+} #if IncludeSelf
 
 
-        foreach ($session in $sessions) {
-            # Creating and Outputting PSCustomObject
-            [PSCustomObject]@{
-                PSTypeName       = "Custom.SB.RDSession"
-                HostServer       = $session.HostServer
-                UserName         = $session.UserName
-                UnifiedSessionID = $session.UnifiedSessionID
-                SessionState     = $session.SessionState
-                IdleTime         = ($session.IdleTime / 60000 -as [int])
-            }
-        }
-    } #process
-
-    End {
-        #Intentionally empty
+foreach ($session in $sessions) {
+    # Creating and Outputting PSCustomObject
+    [PSCustomObject]@{
+        PSTypeName       = "Custom.SB.RDSession"
+        HostServer       = $session.HostServer
+        UserName         = $session.UserName
+        UnifiedSessionID = $session.UnifiedSessionID
+        SessionState     = $session.SessionState
+        IdleTime         = ($session.IdleTime / 60000 -as [int])
     }
+}
+} #process
 } #function
 
 # Adding a Script Method to Get-sbRDSession to allow sending messages to the session(s) found.
@@ -148,10 +138,10 @@ function Disconnect-sbRDSession {
     .SYNOPSIS
         Disconnect one or more Remote Desktop sessions.
     .DESCRIPTION
-        This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will disconnect any
+        This cmdlet - which requires objects passed in from the 'Get-sbRDSession' cmdlet - will disconnect any
         Remote Desktop session passed to it from the pipeline.
     .PARAMETER RDSession
-        Requires an object passed by `Get-sbRDSession`.
+        Requires an object passed by 'Get-sbRDSession'.
     .EXAMPLE
         Get-sbRDSession <parameters> | Disconnect-sbRDSession
 
@@ -167,9 +157,6 @@ function Disconnect-sbRDSession {
         [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession
     )
 
-    Begin {
-        # Intentionally empty
-    }
     # Process block is required when receiving objects from the pipeline, otherwise only last object will be received
     Process {
         # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
@@ -190,21 +177,17 @@ function Disconnect-sbRDSession {
 
         } #foreach
     } #Process
-
-    End {
-        # Intentionally empty
-    }
 } #function
 
 function Remove-sbRDSession {
     <#
     .SYNOPSIS
-        Logs Off any Remote Desktop sessions passed in by the `Get-sbRDSession` cmdlet.
+        Logs Off any Remote Desktop sessions passed in by the 'Get-sbRDSession' cmdlet.
     .DESCRIPTION
-        This cmdlet - which requires objects passed in from the `Get-sbRDSession` cmdlet - will log off any
+        This cmdlet - which requires objects passed in from the 'Get-sbRDSession' cmdlet - will log off any
         Remote Desktop session passed to it from the pipeline.
     .PARAMETER RDSession
-        Requires an object passed by `Get-sbRDSession`.
+        Requires an object passed by 'Get-sbRDSession'.
     .PARAMETER AsJob
         Run the session log offs as background jobs, in parallel.
     .EXAMPLE
@@ -222,9 +205,6 @@ function Remove-sbRDSession {
         [switch]$AsJob
     )
 
-    Begin {
-        # Intentionally empty
-    }
     # Process block is required when receiving objects from the pipeline, otherwise only last object will be received
     Process {
         # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
@@ -243,8 +223,7 @@ function Remove-sbRDSession {
                     # Need to use "using:" scope here to pass local hashtable to Job function, otherwise will pass all as null
                     $sb = { Invoke-RDUserLogoff @using:params }
                     Start-Job -ScriptBlock $sb -Name "Log Off [$($session.UserName)]"
-                }
-                else {
+                } else {
                     Write-Verbose "Attempting Logoff of [$($session.Username)] on [$($session.HostServer)]"
                     Invoke-RDUserLogoff @params
                     Write-Host "User [$($session.Username)] logged off from [$($session.HostServer)]" -ForegroundColor Green
@@ -252,10 +231,6 @@ function Remove-sbRDSession {
             } #shouldprocess
         } #foreach
     } #Process
-
-    End {
-        # Intentionally empty
-    }
 } #function
 
 function Send-sbRDMessage {
@@ -294,9 +269,6 @@ function Send-sbRDMessage {
         [PSTypeName("Custom.SB.RDSession")][Object[]]$RDSession
     )
 
-    Begin {
-        # Intentionally empty
-    }
     # Process block is required when receiving objects from the pipeline, otherwise only last object will be received
     Process {
         # ForEach needed in order to process an array of objects passed in as a variable, as opposed to the Pipeline which feeds objects individually
@@ -316,8 +288,4 @@ function Send-sbRDMessage {
 
         } #foreach
     } #process
-
-    End {
-        # Intentionally empty
-    }
 } #function
