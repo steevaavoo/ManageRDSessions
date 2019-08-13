@@ -90,15 +90,12 @@ function Get-sbRDSession {
         if ($IncludeSelf) {
             Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
             $sessions = Get-RDUserSession | Where-Object {
-                $_.SessionState -like $stateLookup.$SessionState
-                -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
+                $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
             }
     } else {
         Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
         $sessions = Get-RDUserSession | Where-Object {
-            $_.SessionState -like $stateLookup.$SessionState
-            -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
-            -and $_.UserName -ne "$env:USERNAME"
+            $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins -and $_.UserName -ne "$env:USERNAME"
         }
 }
 } #if IncludeSelf
