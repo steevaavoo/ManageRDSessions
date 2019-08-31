@@ -85,34 +85,34 @@ function Get-sbRDSession {
                 Get-RDUserSession | Where-Object {
                     $_.UserName -like "*$user*"
                 }
-        }#foreach user
-    } else {
-        if ($IncludeSelf) {
-            Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
-            $sessions = Get-RDUserSession | Where-Object {
-                $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
+            }#foreach user
+        } else {
+            if ($IncludeSelf) {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
+                }
+            } else {
+                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
+                $sessions = Get-RDUserSession | Where-Object {
+                    $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins -and $_.UserName -ne "$env:USERNAME"
+                }
             }
-    } else {
-        Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
-        $sessions = Get-RDUserSession | Where-Object {
-            $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins -and $_.UserName -ne "$env:USERNAME"
+        } #if IncludeSelf
+
+
+        foreach ($session in $sessions) {
+            # Creating and Outputting PSCustomObject
+            [PSCustomObject]@{
+                PSTypeName       = "Custom.SB.RDSession"
+                HostServer       = $session.HostServer
+                UserName         = $session.UserName
+                UnifiedSessionID = $session.UnifiedSessionID
+                SessionState     = $session.SessionState
+                IdleTime         = ($session.IdleTime / 60000 -as [int])
+            }
         }
-}
-} #if IncludeSelf
-
-
-foreach ($session in $sessions) {
-    # Creating and Outputting PSCustomObject
-    [PSCustomObject]@{
-        PSTypeName       = "Custom.SB.RDSession"
-        HostServer       = $session.HostServer
-        UserName         = $session.UserName
-        UnifiedSessionID = $session.UnifiedSessionID
-        SessionState     = $session.SessionState
-        IdleTime         = ($session.IdleTime / 60000 -as [int])
-    }
-}
-} #process
+    } #process
 } #function
 
 # Adding a Script Method to Get-sbRDSession to allow sending messages to the session(s) found.
