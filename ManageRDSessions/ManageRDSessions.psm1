@@ -82,7 +82,9 @@ function Get-sbRDSession {
         } else {
         }
 
-        if (-not($SkipCheck)) {
+        if ($SkipCheck.IsPresent) {
+            Write-Verbose "[BEGIN  :] Skipping connection check..."
+        } else {
             Write-Verbose "[BEGIN  :] Connection Broker [$ConnectionBroker] specified. Checking for RDS Deployment..."
             try {
                 Get-RDServer -ConnectionBroker $ConnectionBroker -ErrorAction Stop | Out-Null
@@ -91,8 +93,6 @@ function Get-sbRDSession {
                 throw
             }
             Write-Verbose "[BEGIN  :] Found RDS deployment at [$ConnectionBroker]."
-        } else {
-            Write-Verbose "[BEGIN  :] Skipping connection check..."
         }
     }
 
