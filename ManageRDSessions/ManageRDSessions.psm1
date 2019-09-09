@@ -48,6 +48,9 @@ function Get-sbRDSession {
     param(
         [CmdletBinding()]
         [Parameter(Mandatory = $false)]
+        [Alias("RdsServer")]
+        [string]$ConnectionBroker,
+        [Parameter(Mandatory = $false)]
         [ValidateSet("Active", "Idle", "Connected", "Disconnected", "Any")]
         [Alias("State")]
         [string]$SessionState = "Any",
@@ -59,6 +62,10 @@ function Get-sbRDSession {
         [Alias("Self")]
         [switch]$IncludeSelf,
 
+        # Allowing choice to skip initial connection check to RDS Deployment to speed things up.
+        [Parameter(Mandatory = $false)]
+        [switch]$SkipCheck,
+
         [Parameter(Mandatory = $false)]
         [int]$MinimumIdleMins = 0,
 
@@ -67,8 +74,31 @@ function Get-sbRDSession {
         [string[]]$UserName = $null
     )
 
+    Begin {
+        if (-not($ConnectionBroker)) {
+            Write-Verbose "[BEGIN  :] No Connection Broker specified, querying and connecting to local host FQDN."
+            $computerinfo = Get-CimInstance -ClassName Win32_ComputerSystem
+            $ConnectionBroker = "$($computerInfo.DNSHostName).$($computerInfo.Domain)"
+        } else {
+        }
+
+        if ($SkipCheck.IsPresent) {
+            Write-Verbose "[BEGIN  :] Skipping connection check..."
+        } else {
+            Write-Verbose "[BEGIN  :] Connection Broker [$ConnectionBroker] specified. Checking for RDS Deployment..."
+            try {
+                Get-RDServer -ConnectionBroker $ConnectionBroker -ErrorAction Stop | Out-Null
+            } catch {
+                Write-Warning "[BEGIN  :] No RDS Deployment found at [$ConnectionBroker]."
+                throw
+            }
+            Write-Verbose "[BEGIN  :] Found RDS deployment at [$ConnectionBroker]."
+        }
+    }
+
     # Process block is required when outputting objects to the pipeline, otherwise only the final object will be passed
     Process {
+
         # Variable Substitution alternative to Switch - suggested by Adam. Love this. It will convert whatever
         # is passed after $stateLookup. into the value on the right.
         $stateLookup = @{
@@ -79,22 +109,26 @@ function Get-sbRDSession {
             Any          = "*"
         }
 
+        $sessionParams = @{
+            ConnectionBroker = $ConnectionBroker
+        }
+
         if ($UserName) {
-            Write-Verbose "Querying RD Session Collection for users like [$UserName]"
+            Write-Verbose "[PROCESS:] Querying RD Session Collection for users like [$UserName]"
             $sessions = foreach ($user in $UserName) {
-                Get-RDUserSession | Where-Object {
+                Get-RDUserSession @sessionParams | Where-Object {
                     $_.UserName -like "*$user*"
                 }
             }#foreach user
         } else {
             if ($IncludeSelf) {
-                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
-                $sessions = Get-RDUserSession | Where-Object {
+                Write-Verbose "[PROCESS:] Querying RD Session Collection for [$SessionState] sessions - including [$env:USERNAME]"
+                $sessions = Get-RDUserSession @sessionParams | Where-Object {
                     $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins
                 }
             } else {
-                Write-Verbose "Querying RD Session Collection for [$SessionState] sessions"
-                $sessions = Get-RDUserSession | Where-Object {
+                Write-Verbose "[PROCESS:] Querying RD Session Collection for [$SessionState] sessions"
+                $sessions = Get-RDUserSession @sessionParams | Where-Object {
                     $_.SessionState -like $stateLookup.$SessionState -and ( $_.IdleTime / 60000 ) -ge $MinimumIdleMins -and $_.UserName -ne "$env:USERNAME"
                 }
             }
@@ -125,7 +159,7 @@ Update-TypeData -TypeName $myType -MemberType ScriptMethod -MemberName SendMessa
         MessageTitle     = $MessageTitle
         MessageBody      = $MessageBody
     }
-    Write-Verbose "Sending message to $($session.UserName)"
+    Write-Verbose "[PROCESS:] Sending message to $($session.UserName)"
     Send-RDUserMessage @messageParams
 } -force
 
