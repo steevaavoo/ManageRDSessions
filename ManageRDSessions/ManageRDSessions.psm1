@@ -1,4 +1,5 @@
 #Requires -RunAsAdministrator
+#Requires -Modules RemoteDesktop
 
 function Get-sbRDSession {
     <#
