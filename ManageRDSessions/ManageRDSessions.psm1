@@ -80,12 +80,19 @@ function Get-sbRDSession {
             Write-Verbose "[BEGIN  :] No Connection Broker specified, querying and connecting to local host FQDN."
             $computerinfo = Get-CimInstance -ClassName Win32_ComputerSystem
             $ConnectionBroker = "$($computerInfo.DNSHostName).$($computerInfo.Domain)"
-        } else {
+        }
+
+        # Attempt to append current domain name when only NetBIOS name specified.
+        if ($ConnectionBroker -notmatch "\.") {
+            Write-Verbose "[BEGIN  :] [$ConnectionBroker] not a FQDN. Attempting to append [$($computerinfo.Domain)]"
+            $ConnectionBroker = "$($ConnectionBroker).$($computerInfo.Domain)"
+            Write-Verbose "[BEGIN  :] Constructed FQDN [$ConnectionBroker], proceeding... "
         }
 
         if ($SkipCheck.IsPresent) {
             Write-Verbose "[BEGIN  :] Skipping connection check..."
         } else {
+
             Write-Verbose "[BEGIN  :] Connection Broker [$ConnectionBroker] specified. Checking for RDS Deployment..."
             try {
                 Get-RDServer -ConnectionBroker $ConnectionBroker -ErrorAction Stop | Out-Null
